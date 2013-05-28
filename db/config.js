@@ -8,6 +8,6 @@ exports.mongodb = {
     'username': '',
     'password': '',
     'name': '',
-    'db': 'restapp_development'
+    'db': 'demo_development'
   }
 }

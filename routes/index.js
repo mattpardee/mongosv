@@ -14,7 +14,6 @@ function index(req, res){
  
 module.exports = function(app, options) {
   app.get('/', index);
-  
-  
+
   resource.setup(app, options);
 }

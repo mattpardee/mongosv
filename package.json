@@ -11,7 +11,10 @@
   "dependencies": {
     "express": "latest",
     "ejs": "latest",
-    "mongoose": "latest"
+    "mongoose": "latest",
+    "passport": "latest",
+    "passport-local": "latest",
+    "connect-ensure-login": "latest"
   },
 
   "devDependencies": {

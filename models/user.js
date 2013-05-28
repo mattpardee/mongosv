@@ -4,9 +4,9 @@
 
 module.exports = function(options) {
   options = options || {};
-  var crypto = require('crypto')
-  , mongoose = options.mongoose || require('mongoose')
-  , Schema = mongoose.Schema;
+  var crypto = require('crypto');
+  var mongoose = options.mongoose || require('mongoose');
+  var Schema = mongoose.Schema;
 
   var UserSchema = new Schema({
     username : {
@@ -45,7 +45,6 @@ module.exports = function(options) {
   }
 
   UserSchema.pre('save', function(next) {
-
     var _this = this;
     if (this._doc.password && this._doc.password != '_default_') {
       this.password = sha1b64(_this._doc.password)
@@ -57,14 +56,17 @@ module.exports = function(options) {
     next();
   });
 
+  UserSchema.pre('init', function(next, data) {
+    delete data.password;
+    next();
+  });
+
   UserSchema.statics.findByUsernamePassword = function(username, password, callback) {
     return this.findOne({
       username : username,
       password : sha1b64(password)
     }, callback);
   }
-
-  var User = mongoose.model("users", UserSchema);
 
   module.exports.createUser = function(username, password) {
     User.create({
@@ -78,4 +80,6 @@ module.exports = function(options) {
       }
     });
   }
+
+  var User = mongoose.model("users", UserSchema);
 }
