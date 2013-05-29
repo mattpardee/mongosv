@@ -68,6 +68,8 @@ module.exports = function(options) {
     }, callback);
   }
 
+  var User = mongoose.model("users", UserSchema);
+
   module.exports.createUser = function(username, password) {
     User.create({
       username : username,
@@ -80,6 +82,4 @@ module.exports = function(options) {
       }
     });
   }
-
-  var User = mongoose.model("users", UserSchema);
 }

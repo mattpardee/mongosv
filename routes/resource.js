@@ -1,37 +1,6 @@
-var passport = require('passport')
-  , ensure = require('connect-ensure-login')
-  , LocalStrategy = require('passport-local').Strategy
-  , User = require('../models/user');
-
-/**
- * LocalStrategy
- *
- * This strategy is used to authenticate users based on a username and password.
- * Anytime a request is made to authorize an application, we must ensure that
- * a user is logged in before asking them to approve the request.
- */
-passport.use(new LocalStrategy(function(username, password, done) {
-  User.findByUsernamePassword(username, password, function(err, user) {
-    if (err) {
-      return done(err);
-    }
-    if (!user) {
-      return done(null, false);
-    }
-    return done(null, user);
-  });
-}));
-
-passport.serializeUser(function(user, done) {
-  done(null, user._id);
-});
-
-passport.deserializeUser(function(id, done) {
-  User.findById(id, function(err, user) {
-    done(err, user);
-  });
-});
-
+var passport = require('passport');
+var ensure = require('connect-ensure-login');
+var LocalStrategy = require('passport-local').Strategy;
 
 /**
  * REST APIs for mongoose models that supports CRUD operations 
@@ -174,15 +143,12 @@ exports.setup = function(app, options) {
   mongoose = options.mongoose || require('../db/mongo-store').mongoose;
   
   var base = options.path || '/rest';
-  
-  app.use(passport.initialize());
-  app.use(passport.session());
-  
+
   // Create a new entity
   app.post(base + '/:resource', exports.create(mongoose));
 
   // List the entities
-  app.get(base + '/:resource', exports.list(mongoose));
+  app.get(base + '/:resource', ensure.ensureLoggedIn('/login'), exports.list(mongoose));
 
   // Find the entity by id
   app.get(base + '/:resource/:id', exports.findById(mongoose));
@@ -191,5 +157,5 @@ exports.setup = function(app, options) {
   app.put(base + '/:resource/:id', exports.updateById(mongoose));
 
   // Delete the entity by id
-  app.delete(base + '/:resource/:id', exports.deleteById(mongoose));
+  app.delete(base + '/:resource/:id', ensure.ensureLoggedIn('/login'), exports.deleteById(mongoose));
 }
